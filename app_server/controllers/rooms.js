@@ -1,15 +1,14 @@
-
 /* Note: Not best practice to read a JSON everytime the webserver processes a request. This should be replaced before the application goes into production.*/
 var fs = require('fs')
-var trips = JSON.parse(fs.readFileSync('./data/trips.json', 'utf8'));
+var rooms = JSON.parse(fs.readFileSync('./data/rooms.json', 'utf8'));
 
 
 
-/*GET travel view*/
-const travel = (req, res) => {
-    res.render('travel', { title: 'Travlr Getaways', trips});
+/*GET rooms view*/
+const rooms = (req, res) => {
+    res.render('rooms', { title: 'Travlr Getaways', rooms});
 };
 
 module.exports = {
-    travel
+    rooms
 };
