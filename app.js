@@ -1,3 +1,5 @@
+const cors = require('cors');
+
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -24,16 +26,30 @@ app.set('view engine', 'hbs');
 // register handlebars partials (https://www.npmjs.com/packag/hbse)
 handlebars.registerPartials(__dirname + '/app_server/views/partials');
 
+
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(cors({
+  origin: 'http://localhost:4200'  // allow Angular dev server
+}));
+app.use('/api', (req,res,next) =>{
+  res.header('Access-Control-Allow_origin', 'http://localhost:4200');
+  res.header('Access-Control-Allow-Headers', 'Origin,X-Requested-Width, Content-Type');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  next();
+});
+
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/travel', travelRouter);
 app.use('/api', apiRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

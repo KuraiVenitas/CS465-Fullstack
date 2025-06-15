@@ -7,13 +7,13 @@ var fs = require('fs');
 var trips = JSON.parse(fs.readFileSync('./data/trips.json', 'utf8'));
 
 // delete any existing records, then insert data
-const seedDB = async ()=> {
+const seedDB = async () => {
     await Trip.deleteMany({});
     await Trip.insertMany(trips);
 };
 
 // CLose the MongoDB connection and exit
 seedDB().then(async() => {
-await Mongoose.connection.close();
-process.exit(0);
+    await Mongoose.connection.close();
+    process.exit(0);
 });
