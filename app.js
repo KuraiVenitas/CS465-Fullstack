@@ -13,11 +13,19 @@ var apiRouter = require('./app_api/routes/index');
 
 var handlebars = require('hbs');
 
+// Wire in our authentication module
+var passport = require('passport');
+
+require('dotenv').config();
+
 // Bring in the database
 require('./app_api/models/db');
+require('./app_api/config/passport');
 
 
 var app = express();
+
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'app_server', 'views'));
@@ -28,18 +36,20 @@ handlebars.registerPartials(__dirname + '/app_server/views/partials');
 
 
 
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(passport.initialize());
 
 app.use(cors({
   origin: 'http://localhost:4200'  // allow Angular dev server
 }));
 app.use('/api', (req,res,next) =>{
-  res.header('Access-Control-Allow_origin', 'http://localhost:4200');
-  res.header('Access-Control-Allow-Headers', 'Origin,X-Requested-Width, Content-Type');
+  res.header('Access-Control-Allow_Origin', 'http://localhost:4200');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-Width, Content-Type, Accept, Authorization');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
   next();
 });
@@ -66,5 +76,15 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+// Catch unauthorized error and create 401
+app.use((err, req, res, next) => {
+if(err.name === 'UnauthorizedError') {
+res
+.status(401)
+.json({"message": err.name + ": " + err.message});
+}
+});
+
 
 module.exports = app;
